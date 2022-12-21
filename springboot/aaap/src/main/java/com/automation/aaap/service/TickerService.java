@@ -55,7 +55,7 @@ public class TickerService {
 			tickerFutures.add(bitbnsFeature);
 			tickerFutures.add(wazFeature);
 			tickerFutures.add(zebFeature);
-			tickerFutures.add(coindcxFeature);
+			//tickerFutures.add(coindcxFeature);
 		} else {
 			if (wallets.contains("B") || wallets.contains("b")) {
 				tickerFutures.add(bitbnsFeature);
@@ -67,7 +67,7 @@ public class TickerService {
 				tickerFutures.add(zebFeature);
 			}
 			if (wallets.contains("c") || wallets.contains("C")) {
-				tickerFutures.add(coindcxFeature);
+			//	tickerFutures.add(coindcxFeature);
 			}
 		}
 
