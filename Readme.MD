@@ -1,8 +1,8 @@
 tickers
-zebpay - https://www.zebapi.com/pro/v1/market/
-bitbns - https://bitbns.com/order/fetchTickers
-wazirx - https://api.wazirx.com/api/v2/tickers
-coindcx - https://api.coindcx.com/
+zebpay - https://www.zebapi.com/pro/v1/market/  --- account created
+bitbns - https://bitbns.com/order/fetchTickers   --- account created
+wazirx - https://api.wazirx.com/api/v2/tickers   --- account created
+coindcx - https://api.coindcx.com/   --- account created
 pocketbits - https://pocketbits.in/  --- account created
 buyucoin -
 https://coinswitch.co/  ----
@@ -18,5 +18,5 @@ bitstamp
 bitfinex
 gemini
 
-[bittrex.com](https://global.bittrex.com/)
+[bittrex.com](https://global.bittrex.com/)  --- account created
 https://www.kucoin.com/
