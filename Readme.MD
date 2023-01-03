@@ -3,7 +3,7 @@ zebpay - https://www.zebapi.com/pro/v1/market/  --- account created
 bitbns - https://bitbns.com/order/fetchTickers   --- account created
 wazirx - https://api.wazirx.com/api/v2/tickers   --- account created
 coindcx - https://api.coindcx.com/   --- account created
-pocketbits - https://pocketbits.in/  --- account created
+pocketbits - https://pocketbits.in/  --- account created --- aaappassword
 buyucoin -
 https://coinswitch.co/  ----
 https://unocoin.com/in/
