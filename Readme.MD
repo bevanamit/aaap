@@ -6,7 +6,7 @@ coindcx - https://api.coindcx.com/   --- account created
 pocketbits - https://pocketbits.in/  --- account created --- aaappassword
 buyucoin -
 https://coinswitch.co/  ----account created
-https://unocoin.com/in/
+https://unocoin.com/in/ ----- account created Thisisfora@1
 https://exchange.throughbit.com/
 https://belfrics.io/#/trade/BTC-INR OR https://india.belfrics.com/
 
