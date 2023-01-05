@@ -5,7 +5,7 @@ wazirx - https://api.wazirx.com/api/v2/tickers   --- account created
 coindcx - https://api.coindcx.com/   --- account created
 pocketbits - https://pocketbits.in/  --- account created --- aaappassword
 buyucoin -
-https://coinswitch.co/  ----
+https://coinswitch.co/  ----account created
 https://unocoin.com/in/
 https://exchange.throughbit.com/
 https://belfrics.io/#/trade/BTC-INR OR https://india.belfrics.com/
