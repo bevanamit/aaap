@@ -1,7 +1,7 @@
 tickers
 zebpay - https://www.zebapi.com/pro/v1/market/  --- account created
-bitbns - https://bitbns.com/order/fetchTickers   --- account created
-wazirx - https://api.wazirx.com/api/v2/tickers   --- account created
+bitbns - https://bitbns.com/order/fetchTickers   --- account created - automated information available if withdrawal and deposit is given
+wazirx - https://api.wazirx.com/api/v2/tickers   --- account created - automated information available if withdrawal and deposit is given
 coindcx - https://api.coindcx.com/   --- account created
 pocketbits - https://pocketbits.in/  --- account created --- aaappassword
 buyucoin -
