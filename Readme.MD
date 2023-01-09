@@ -25,3 +25,9 @@ gemini
 
 [bittrex.com](https://global.bittrex.com/)  --- account created
 https://www.kucoin.com/
+
+
+| Market  | URL | Account Created | 
+| ------------- | ------------- | ------------- | 
+| zebpay | https://www.zebapi.com/pro/v1/market/ |  |
+| bitbns |  https://bitbns.com/order/fetchTickers | |
