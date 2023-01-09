@@ -27,7 +27,7 @@ gemini
 https://www.kucoin.com/
 
 
-| Market  | URL | Account Created | 
-| ------------- | ------------- | ------------- | 
-| zebpay | https://www.zebapi.com/pro/v1/market/ |  |
-| bitbns |  https://bitbns.com/order/fetchTickers | |
+| Exchange  | URL | Account Created | Comments |
+| ------------- | ------------- | ------------- | ------------- | 
+| zebpay | https://www.zebapi.com/pro/v1/market/ |  | |
+| bitbns |  https://bitbns.com/order/fetchTickers | | |
