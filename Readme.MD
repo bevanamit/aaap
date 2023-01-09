@@ -1,14 +1,19 @@
 tickers
+
+Amit --------
 zebpay - https://www.zebapi.com/pro/v1/market/  --- account created
 bitbns - https://bitbns.com/order/fetchTickers   --- account created - automated information available if withdrawal and deposit is given
 wazirx - https://api.wazirx.com/api/v2/tickers   --- account created - automated information available if withdrawal and deposit is given
 coindcx - https://api.coindcx.com/   --- account created
 pocketbits - https://pocketbits.in/  --- account created --- aaappassword
-buyucoin -
+buyucoin -------
+
+Avinash -------
 https://coinswitch.co/  ----account created
 https://unocoin.com/in/ ----- account created Thisisfora@1
 https://exchange.throughbit.com/
 https://belfrics.io/#/trade/BTC-INR OR https://india.belfrics.com/
+-------
 
 ------ International exchanges ------
 binance.com
