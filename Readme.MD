@@ -15,23 +15,13 @@ https://exchange.throughbit.com/
 https://belfrics.io/#/trade/BTC-INR OR https://india.belfrics.com/
 -------
 
------- International exchanges ------
-binance.com
-coinbase
-kraken
-bitstamp
-bitfinex
-gemini
-
-[bittrex.com](https://global.bittrex.com/)  --- account created
-https://www.kucoin.com/
 
 
 | India Exchanges  | URL | Account Created | Comments |
 | ------------- | ------------- | ------------- | ------------- | 
 | zebpay | https://www.zebapi.com/pro/v1/market/ |  | |
-| bitbns |  https://bitbns.com/order/fetchTickers | | |
-| wazirx | https://api.wazirx.com/api/v2/tickers | | |
+| bitbns |  https://bitbns.com/order/fetchTickers | | automated information available if withdrawal and deposit is given |
+| wazirx | https://api.wazirx.com/api/v2/tickers | | automated information available if withdrawal and deposit is given |
 | coindcx | https://api.coindcx.com/ | | |
 | pocketbits | https://pocketbits.in/ | | aaap password |
 | buyucoin |                          | | |
@@ -49,3 +39,5 @@ https://www.kucoin.com/
 | bitstamp | | | |
 | bitfinex | | | |
 | gemini | | | |
+| kucoin | | | |
+| bittrex.com | | | |
