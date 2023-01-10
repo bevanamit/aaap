@@ -27,11 +27,25 @@ gemini
 https://www.kucoin.com/
 
 
-| Exchange  | URL | Account Created | Comments |
+| India Exchanges  | URL | Account Created | Comments |
 | ------------- | ------------- | ------------- | ------------- | 
 | zebpay | https://www.zebapi.com/pro/v1/market/ |  | |
 | bitbns |  https://bitbns.com/order/fetchTickers | | |
 | wazirx | https://api.wazirx.com/api/v2/tickers | | |
 | coindcx | https://api.coindcx.com/ | | |
-| pocketbits | https://pocketbits.in/ | | |
+| pocketbits | https://pocketbits.in/ | | aaap password |
 | buyucoin |                          | | |
+| coinswitch | https://coinswitch.co/ | | account created |
+| unocoin | https://unocoin.com/in/ | | account created Thisisfora@1 |
+| throughbit | https://exchange.throughbit.com/ | | |
+| Belfrics | https://belfrics.io/#/trade/BTC-INR OR https://india.belfrics.com/ | | |
+
+
+| International Exchanges  | URL | Account Created | Comments |
+| ------------- | ------------- | ------------- | ------------- | 
+| binance.com | | | |
+| coinbase | | | |
+| kraken | | | |
+| bitstamp | | | |
+| bitfinex | | | |
+| gemini | | | |
