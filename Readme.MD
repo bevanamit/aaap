@@ -19,7 +19,7 @@ https://belfrics.io/#/trade/BTC-INR OR https://india.belfrics.com/
 
 | India Exchanges  | URL | Account Created | Comments | API |
 | ------------- | ------------- | ------------- | ------------- | ------------- | 
-| zebpay | https://www.zebapi.com/pro/v1/market/ | Yes | | https://www.zebapi.com/pro/v1/market/, https://www.zebapi.com/api/v1/wallet/balance - not sure which api gives the required results |
+| zebpay | https://www.zebapi.com/pro/v1/market/ | Yes | | https://www.zebapi.com/pro/v1/market/, https://www.zebapi.com/api/v1/wallet/balance - not sure which api gives the required results, https://www.zebapi.com/api/v1/Statement/GetAllStatementType, https://www.zebapi.com/api/v1/tradepairs/IN, https://www.zebapi.com/api/v1/tradefees/BTC-INR, https://cdn.freshbots.ai/assets/share/js/freshbots.min.js,  https://www.zebapi.com/api/v1/account/config, https://www.zebapi.com/api/v1/wallet/btc/receiveaddress,  https://www.zebapi.com/api/v1/wallet/btc/sendaddress |
 | bitbns |  https://bitbns.com/order/fetchTickers | Yes | automated information available if withdrawal and deposit is given | |
 | wazirx | https://api.wazirx.com/api/v2/tickers | Yes | automated information available if withdrawal and deposit is given | |
 | coindcx | https://api.coindcx.com/ | Yes | | |
