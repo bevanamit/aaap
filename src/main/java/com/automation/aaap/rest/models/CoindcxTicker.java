@@ -1,6 +1,5 @@
 package com.automation.aaap.rest.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CoindcxTicker {
 	private String market;

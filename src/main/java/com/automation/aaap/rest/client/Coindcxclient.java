@@ -2,15 +2,12 @@ package com.automation.aaap.rest.client;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import com.automation.aaap.rest.models.CoindcxTicker;
 import com.automation.aaap.rest.models.Ticker;
-import com.automation.aaap.rest.models.ZebPayTicker;
 
 @Service
 public class Coindcxclient extends AbstarctWebClient {

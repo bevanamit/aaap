@@ -2,24 +2,28 @@ package com.automation.aaap.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.automation.aaap.AppConfig;
+import com.automation.aaap.models.ConfigModel;
 import com.automation.aaap.models.TickerResult;
+import com.automation.aaap.rest.client.BinanceClient;
 import com.automation.aaap.rest.client.Bitbnsclient;
 import com.automation.aaap.rest.client.Coindcxclient;
 import com.automation.aaap.rest.client.Wazrixclient;
 import com.automation.aaap.rest.client.Zebpayclient;
+import com.automation.aaap.rest.models.BinanceP2PTicker;
 import com.automation.aaap.rest.models.Ticker;
+import com.automation.aaap.util.IConstant;
 
 @Service
 public class TickerService {
@@ -31,11 +35,23 @@ public class TickerService {
 
 	@Autowired
 	private Wazrixclient wazrixclient;
+
+	@Autowired
+	private Coindcxclient coindcxclient;
 	
 	@Autowired
-	Coindcxclient coindcxclient;
+	BinanceClient binanceClient;
 
-	private List<CompletableFuture<List<Ticker>>> getTickers(String wallets) {
+	@Autowired
+	AppConfig appConfig;
+	String c[] = { "BTC", "ETH", "USDT", "USDC", "BNB", "XRP", "BUSD", "ADA", "DOGE", "MATIC", "DAI", "LTC", "DOT",
+			"TRX", "SHIB" };
+	List<String> topCoins = Arrays.asList(c);
+
+	private List<CompletableFuture<List<Ticker>>> getTickerFeatures(String wallets) {
+		if (wallets != null)
+			wallets = wallets.toUpperCase();
+		List<CompletableFuture<List<Ticker>>> tickerFutures = new ArrayList<>();
 		CompletableFuture<List<Ticker>> zebFeature = CompletableFuture.supplyAsync(() -> {
 			return zebpayclient.fetcTickerData();
 		});
@@ -45,57 +61,31 @@ public class TickerService {
 		CompletableFuture<List<Ticker>> bitbnsFeature = CompletableFuture.supplyAsync(() -> {
 			return bitbnsclient.fetcTickerData();
 		});
-		
+
 		CompletableFuture<List<Ticker>> coindcxFeature = CompletableFuture.supplyAsync(() -> {
 			return coindcxclient.fetcTickerData();
 		});
 
-		List<CompletableFuture<List<Ticker>>> tickerFutures = new ArrayList<>();
-		if (wallets == null) {
-			tickerFutures.add(bitbnsFeature);
+		if (wallets == null || wallets.contains("W")) {
 			tickerFutures.add(wazFeature);
-			tickerFutures.add(zebFeature);
-			//tickerFutures.add(coindcxFeature);
-		} else {
-			if (wallets.contains("B") || wallets.contains("b")) {
-				tickerFutures.add(bitbnsFeature);
-			}
-			if (wallets.contains("W") || wallets.contains("w")) {
-				tickerFutures.add(wazFeature);
-			}
-			if (wallets.contains("z") || wallets.contains("Z")) {
-				tickerFutures.add(zebFeature);
-			}
-			if (wallets.contains("c") || wallets.contains("C")) {
-			//	tickerFutures.add(coindcxFeature);
-			}
 		}
-
+		if (wallets == null || wallets.contains("Z")) {
+			tickerFutures.add(zebFeature);
+		}
+		if (wallets == null || wallets.contains("B")) {
+			tickerFutures.add(bitbnsFeature);
+		}
+		if (wallets == null || wallets.contains("C")) {
+			// tickerFutures.add(coindcxFeature);
+		}
 		return tickerFutures;
 	}
 
-	public List<TickerResult> getTickersDataViceversa(String one, String two) {
+	public List<TickerResult> getTickersDataFromOneway(String one, String two) {
+		appConfig.updateConfig();
 		String wallets = "WZBC";
 		if (wallets.contains(one) && wallets.contains(two)) {
-			getTickers(one.concat(two));
-			List<CompletableFuture<List<Ticker>>> tickerFutures = getTickers(one.concat(two));
-			CompletableFuture<Void> allFutures = CompletableFuture
-					.allOf(tickerFutures.toArray(new CompletableFuture[tickerFutures.size()]));
-			CompletableFuture<List<List<Ticker>>> allCompletableFuture = allFutures.thenApply(future -> {
-				return tickerFutures.stream().map(completableFuture -> completableFuture.join())
-						.collect(Collectors.toList());
-			});
-			CompletableFuture<List<List<Ticker>>> completableFuture = allCompletableFuture.toCompletableFuture();
-			List<List<Ticker>> finalList = null;
-			try {
-				finalList = (List<List<Ticker>>) completableFuture.get();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<List<Ticker>> finalList = excuteArbitrageTickerFutures(one.concat(two));
 
 			HashMap<String, List<Ticker>> mapByIdentity = mapByIdentityGetMapIdentityTickers(
 					finalList.stream().flatMap(list -> list.stream()).collect(Collectors.toList()));
@@ -130,16 +120,15 @@ public class TickerService {
 				}
 
 			}
-			listOfticker.sort(Comparator.comparing(TickerResult::getPercentage).reversed());
-			return listOfticker;
+			return filterTickerResults(listOfticker);
 
 		} else {
 			throw new RuntimeException("Invalid ones");
 		}
 	}
 
-	public List<TickerResult> getTickersData(String wallets) {
-		List<CompletableFuture<List<Ticker>>> tickerFutures = getTickers(wallets);
+	private List<List<Ticker>> excuteArbitrageTickerFutures(String wallets) {
+		List<CompletableFuture<List<Ticker>>> tickerFutures = getTickerFeatures(wallets);
 		CompletableFuture<Void> allFutures = CompletableFuture
 				.allOf(tickerFutures.toArray(new CompletableFuture[tickerFutures.size()]));
 		CompletableFuture<List<List<Ticker>>> allCompletableFuture = allFutures.thenApply(future -> {
@@ -150,15 +139,18 @@ public class TickerService {
 		List<List<Ticker>> finalList = null;
 		try {
 			finalList = (List<List<Ticker>>) completableFuture.get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return finalList;
+	}
 
-		return getTickerResults(finalList.stream().flatMap(list -> list.stream()).collect(Collectors.toList()));
+	public List<TickerResult> getArbitrageTickersAll(String wallets) {
+		appConfig.updateConfig();
+		List<List<Ticker>> finalList = excuteArbitrageTickerFutures(wallets);
+
+		return filterTickerResults(getTickerAribataryResult(
+				finalList.stream().flatMap(list -> list.stream()).collect(Collectors.toList())));
 
 	}
 
@@ -180,7 +172,7 @@ public class TickerService {
 		return mapByIdentity;
 	}
 
-	public List<TickerResult> getTickerResults(List<Ticker> tickers) {
+	private List<TickerResult> getTickerAribataryResult(List<Ticker> tickers) {
 
 		List<TickerResult> listOfticker = new ArrayList<>();
 		// Filter by currencyes
@@ -229,5 +221,102 @@ public class TickerService {
 		Double percentage = (diff) / buy * 100;
 		return percentage;
 
+	}
+
+	private List<TickerResult> filterTickerResults(List<TickerResult> ts) {
+
+		List<TickerResult> res = new ArrayList<TickerResult>();
+		ConfigModel buy = null;
+		for (TickerResult t : ts) {
+			if (t.getBuyWallet().equals(IConstant.BITBNS_NAME)) {
+				ConfigModel c = AppConfig.bnsConfig.get(t.getIdentity().toUpperCase());
+				if (c == null || c.isWithdrawl() == false)
+					continue;
+				else
+					buy = c;
+
+			}
+			if (t.getBuyWallet().equals(IConstant.WAZ_NAME)) {
+				ConfigModel c = AppConfig.wazConfig.get(t.getIdentity().toUpperCase());
+				if (c == null || c.isWithdrawl() == false)
+					continue;
+				else
+					buy = c;
+			}
+
+			if (t.getSellWallet().equals(IConstant.BITBNS_NAME)) {
+				ConfigModel c = AppConfig.bnsConfig.get(t.getIdentity().toUpperCase());
+				if (c == null || c.isDepositable() == false)
+					continue;
+
+			}
+			if (t.getSellWallet().equals(IConstant.WAZ_NAME)) {
+				ConfigModel c = AppConfig.wazConfig.get(t.getIdentity().toUpperCase());
+				if (c == null || c.isDepositable() == false)
+					continue;
+			}
+
+			if (buy != null) {
+				t.setWithdrawalCharge(buy.getWithdrawalCharge());
+				t.setExchangeChargeValue(t.getBuy() * buy.getWithdrawalCharge());
+				t.setMinimumWithdrawal(buy.getMinimumWithdrawal());
+			}
+
+			res.add(t);
+
+		}
+		res.sort(Comparator.comparing(TickerResult::getPercentage).reversed());
+
+		return filterTop(res);
+	}
+
+	public List<TickerResult> filterTop(List<TickerResult> res) {
+
+		return res.stream().filter(x -> topCoins.contains(x.identity)).collect(Collectors.toList());
+
+	}
+	
+	
+	public HashMap<String , HashMap<String,String>> getNinanceData() {
+		
+		String symbols [] = {"USDT","BTC","BUSD","BNB","ETH","ADA","TRX","SHIB","MATIC","WRX","XRP","SOL"};
+		HashMap<String,BinanceP2PTicker> listP2 = new HashMap<>();
+		HashMap<String,BinanceP2PTicker> listTrade = new HashMap<>();
+		for(String s: symbols) {
+			listP2.put(s,binanceClient.getP2pData(s,"BUY"));
+		}
+		for(String s: symbols) {
+			if(!s.equals("USDT") && !s.equals("BUSD")) {
+				listTrade.put(s,binanceClient.getTradeData(s));
+			}
+		}
+		BinanceP2PTicker b =listP2.put("USDT",binanceClient.getP2pData("USDT","SELL"));
+		HashMap<String , HashMap<String,String>> res = new HashMap<>();
+		for(String s: symbols) {
+			if(!s.equals("USDT") && !s.equals("BUSD")) {
+			
+				double  buy=Double.valueOf(listP2.get(s).getBuy());
+				double volume = listP2.get(s).getVolume();
+				double price=buy*volume;
+				double sell= Double.valueOf(listTrade.get(s).getBuy());
+				double sellDollar = volume*sell;
+				double returnprice = sellDollar*Double.valueOf(b.getBuy());
+				Double diff = returnprice - price;
+				Double percentage = (diff) / price * 100;
+				HashMap<String, String> m =new  HashMap<String, String>();
+				m.put("identity", s);
+				m.put("buy", String.valueOf(buy));
+				m.put("price", String.valueOf(price));
+				m.put("sell", String.valueOf(sell));
+				m.put("sellDollar", String.valueOf(sellDollar));
+				m.put("returnprice", String.valueOf(returnprice));
+				m.put("percentage", String.valueOf(percentage));
+				
+				res.put(s,m);
+			}
+		}
+		
+		return res;
+		
 	}
 }

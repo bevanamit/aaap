@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import com.automation.aaap.rest.models.BitbnsTicker;
 import com.automation.aaap.rest.models.Ticker;
-import com.automation.aaap.rest.models.ZebPayTicker;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.automation.aaap.util.IConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -35,6 +30,13 @@ public class Bitbnsclient extends AbstarctWebClient {
 				.block());
 	}
 
+	public String getConfig() {
+		return webClient.get().uri("https://bitbns.com/_next/data/5.0.8/fees.json?type=crypto").retrieve()
+				.bodyToMono(String.class).block();
+
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<Ticker> convert(String stringdata) {
 		Map<String, String> data;
 		try {
@@ -47,15 +49,16 @@ public class Bitbnsclient extends AbstarctWebClient {
 		for (Map.Entry<String, String> en : data.entrySet()) {
 			try {
 				ObjectMapper objectMapper = new ObjectMapper();
-				BitbnsTicker bt =objectMapper.convertValue(en.getValue(), BitbnsTicker.class);
-				//BitbnsTicker bt = objectMapper.readValue(en.getValue(), BitbnsTicker.class);
+				BitbnsTicker bt = objectMapper.convertValue(en.getValue(), BitbnsTicker.class);
+				// BitbnsTicker bt = objectMapper.readValue(en.getValue(), BitbnsTicker.class);
 
 				Ticker t = new Ticker();
-				t.setWalletName("BITBNS");
+				t.setWalletName(IConstant.BITBNS_NAME);
 				t.setBuyPrice(bt.getBid());
 				t.setSellPrice(bt.getAsk());
 				t.setCurrency(bt.getSymbol().split("/")[1]);
 				t.setIdentity(bt.getSymbol().split("/")[0]);
+
 				tickers.add(t);
 			} catch (Exception e) {
 

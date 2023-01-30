@@ -4,19 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import com.automation.aaap.rest.models.BitbnsTicker;
 import com.automation.aaap.rest.models.Ticker;
 import com.automation.aaap.rest.models.WazrixTicker;
-import com.automation.aaap.rest.models.ZebPayTicker;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.automation.aaap.util.IConstant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -26,7 +21,10 @@ public class Wazrixclient extends AbstarctWebClient {
 
 	@Autowired
 	public Wazrixclient() {
-		this.webClient = WebClient.builder().filter(logRequest()).filter(logResponse())
+		final int size = 16 * 1024 * 1024;
+		final ExchangeStrategies strategies = ExchangeStrategies.builder()
+				.codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(size)).build();
+		this.webClient = WebClient.builder().exchangeStrategies(strategies).filter(logRequest()).filter(logResponse())
 				.defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 	}
 
@@ -36,6 +34,13 @@ public class Wazrixclient extends AbstarctWebClient {
 				.block());
 	}
 
+	public String getConfig() {
+		return webClient.get().uri("https://api.wazirx.com//api/v2/market-status").retrieve().bodyToMono(String.class)
+				.block();
+
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<Ticker> convert(String stringdata) {
 		Map<String, String> data;
 		try {
@@ -48,11 +53,10 @@ public class Wazrixclient extends AbstarctWebClient {
 		for (Map.Entry<String, String> en : data.entrySet()) {
 			try {
 				ObjectMapper objectMapper = new ObjectMapper();
-				WazrixTicker wz =objectMapper.convertValue(en.getValue(), WazrixTicker.class);
-				//BitbnsTicker bt = objectMapper.readValue(en.getValue(), BitbnsTicker.class);
+				WazrixTicker wz = objectMapper.convertValue(en.getValue(), WazrixTicker.class);
 
 				Ticker t = new Ticker();
-				t.setWalletName("WAZRIX");
+				t.setWalletName(IConstant.WAZ_NAME);
 				t.setBuyPrice(Double.parseDouble(wz.getBuy()));
 				t.setSellPrice(Double.parseDouble(wz.getSell()));
 				t.setCurrency(wz.getName().split("/")[1]);
