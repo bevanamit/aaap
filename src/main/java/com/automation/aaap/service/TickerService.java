@@ -38,7 +38,7 @@ public class TickerService {
 
 	@Autowired
 	private Coindcxclient coindcxclient;
-	
+
 	@Autowired
 	BinanceClient binanceClient;
 
@@ -223,6 +223,12 @@ public class TickerService {
 
 	}
 
+	private Double getPercentage(Double buy , Double sell) {
+		Double diff = sell - buy;
+		Double percentage = (diff) / buy * 100;
+		return percentage;
+
+	}
 	private List<TickerResult> filterTickerResults(List<TickerResult> ts) {
 
 		List<TickerResult> res = new ArrayList<TickerResult>();
@@ -275,35 +281,34 @@ public class TickerService {
 		return res.stream().filter(x -> topCoins.contains(x.identity)).collect(Collectors.toList());
 
 	}
-	
-	
-	public HashMap<String , HashMap<String,String>> getNinanceData() {
-		
-		String symbols [] = {"USDT","BTC","BUSD","BNB","ETH","ADA","TRX","SHIB","MATIC","WRX","XRP","SOL"};
-		HashMap<String,BinanceP2PTicker> listP2 = new HashMap<>();
-		HashMap<String,BinanceP2PTicker> listTrade = new HashMap<>();
-		for(String s: symbols) {
-			listP2.put(s,binanceClient.getP2pData(s,"BUY"));
+
+	public HashMap<String, HashMap<String, String>> getNinanceData() {
+
+		String symbols[] = { "USDT", "BTC", "BUSD", "BNB", "ETH", "ADA", "TRX", "SHIB", "MATIC", "WRX", "XRP", "SOL" };
+		HashMap<String, BinanceP2PTicker> listP2 = new HashMap<>();
+		HashMap<String, BinanceP2PTicker> listTrade = new HashMap<>();
+		for (String s : symbols) {
+			listP2.put(s, binanceClient.getP2pData(s, "BUY"));
 		}
-		for(String s: symbols) {
-			if(!s.equals("USDT") && !s.equals("BUSD")) {
-				listTrade.put(s,binanceClient.getTradeData(s));
+		for (String s : symbols) {
+			if (!s.equals("USDT") && !s.equals("BUSD")) {
+				listTrade.put(s, binanceClient.getTradeData(s));
 			}
 		}
-		BinanceP2PTicker b =listP2.put("USDT",binanceClient.getP2pData("USDT","SELL"));
-		HashMap<String , HashMap<String,String>> res = new HashMap<>();
-		for(String s: symbols) {
-			if(!s.equals("USDT") && !s.equals("BUSD")) {
-			
-				double  buy=Double.valueOf(listP2.get(s).getBuy());
+		BinanceP2PTicker b = listP2.put("USDT", binanceClient.getP2pData("USDT", "SELL"));
+		HashMap<String, HashMap<String, String>> res = new HashMap<>();
+		for (String s : symbols) {
+			if (!s.equals("USDT") && !s.equals("BUSD")) {
+
+				double buy = Double.valueOf(listP2.get(s).getBuy());
 				double volume = listP2.get(s).getVolume();
-				double price=buy*volume;
-				double sell= Double.valueOf(listTrade.get(s).getBuy());
-				double sellDollar = volume*sell;
-				double returnprice = sellDollar*Double.valueOf(b.getBuy());
+				double price = buy * volume;
+				double sell = Double.valueOf(listTrade.get(s).getBuy());
+				double sellDollar = volume * sell;
+				double returnprice = sellDollar * Double.valueOf(b.getBuy());
 				Double diff = returnprice - price;
 				Double percentage = (diff) / price * 100;
-				HashMap<String, String> m =new  HashMap<String, String>();
+				HashMap<String, String> m = new HashMap<String, String>();
 				m.put("identity", s);
 				m.put("buy", String.valueOf(buy));
 				m.put("price", String.valueOf(price));
@@ -311,12 +316,90 @@ public class TickerService {
 				m.put("sellDollar", String.valueOf(sellDollar));
 				m.put("returnprice", String.valueOf(returnprice));
 				m.put("percentage", String.valueOf(percentage));
-				
-				res.put(s,m);
+
+				res.put(s, m);
 			}
 		}
-		
+
 		return res;
+
+	}
+
+	public HashMap<String, BinanceP2PTicker> getP2pForBinance() {
+
+		String symbols[] = { "USDT", "BTC", "BUSD", "BNB", "ETH", "ADA", "TRX", "SHIB", "MATIC", "WRX", "XRP", "SOL" };
+		HashMap<String, BinanceP2PTicker> listP2 = new HashMap<>();
+		for (String s : symbols) {
+			listP2.put(s, binanceClient.getP2pData(s, "BUY"));
+		}
+
+		return listP2;
+	}
+	public HashMap<String, BinanceP2PTicker> getP2pForBinanceSell() {
+
+		String symbols[] = { "USDT", "BTC", "BUSD", "BNB", "ETH", "ADA", "TRX", "SHIB", "MATIC", "WRX", "XRP", "SOL" };
+		HashMap<String, BinanceP2PTicker> listP2 = new HashMap<>();
+		for (String s : symbols) {
+			listP2.put(s, binanceClient.getP2pDataForSell(s, "SELL"));
+		}
+
+		return listP2;
+	}
+
+	public List<TickerResult> getWBn() {
+		List<List<Ticker>> waz = excuteArbitrageTickerFutures("W");
+		HashMap<String, BinanceP2PTicker> listP2 = getP2pForBinance();
+		String symbols[] = { "USDT", "BTC", "BUSD", "BNB", "ETH", "ADA", "TRX", "SHIB", "MATIC", "WRX", "XRP", "SOL" };
+		List<TickerResult> listOfticker = new ArrayList<>();
+		Map<String,Ticker> map = new HashMap<>();
+		for (Ticker i : waz.get(0)) { 
+			if(i.currency.toUpperCase().equals("INR"))
+			map.put(i.getIdentity().toUpperCase(),i);
+		}
 		
+		
+		for (String s : symbols) {
+			double buy = Double.valueOf(listP2.get(s).getBuy());
+			TickerResult tr = new TickerResult();
+			tr.setSell(map.get(s).sellPrice);
+			tr.setBuy(buy);
+			tr.setSellWallet("BINANCE");
+			tr.setBuyWallet("WAZRIX");
+			tr.setIdentity(s);
+			tr.setPercentage(getPercentage(buy,map.get(s).sellPrice));
+			tr.setCurrency("INR");
+			
+			listOfticker.add(tr);
+		}
+		listOfticker.sort(Comparator.comparing(TickerResult::getPercentage).reversed());
+		return listOfticker;
+	}
+	public List<TickerResult> getBnw() {
+		List<List<Ticker>> waz = excuteArbitrageTickerFutures("W");
+		HashMap<String, BinanceP2PTicker> listP2 = getP2pForBinanceSell();
+		String symbols[] = { "USDT", "BTC", "BUSD", "BNB", "ETH", "ADA", "TRX", "SHIB", "MATIC", "WRX", "XRP", "SOL" };
+		List<TickerResult> listOfticker = new ArrayList<>();
+		Map<String,Ticker> map = new HashMap<>();
+		for (Ticker i : waz.get(0)) { 
+			if(i.currency.toUpperCase().equals("INR"))
+			map.put(i.getIdentity().toUpperCase(),i);
+		}
+		
+		
+		for (String s : symbols) {
+			double sell = Double.valueOf(listP2.get(s).getSell());
+			TickerResult tr = new TickerResult();
+			tr.setSell(sell);
+			tr.setBuy(map.get(s).buyPrice);
+			tr.setSellWallet("WAZRIX");
+			tr.setBuyWallet("BINANCE");
+			tr.setIdentity(s);
+			tr.setPercentage(getPercentage(map.get(s).buyPrice,sell));
+			tr.setCurrency("INR");
+			
+			listOfticker.add(tr);
+		}
+		listOfticker.sort(Comparator.comparing(TickerResult::getPercentage).reversed());
+		return listOfticker;
 	}
 }

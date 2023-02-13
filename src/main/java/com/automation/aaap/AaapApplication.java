@@ -17,7 +17,7 @@ public class AaapApplication {
 
 	@PostConstruct
 	public void init() {
-		appConfig.updateConfig();
+		//appConfig.updateConfig();
 	}
 
 }

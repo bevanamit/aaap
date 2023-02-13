@@ -36,6 +36,14 @@ public class BinanceClient extends AbstarctWebClient {
 				.block());
 
 	}
+	
+	public BinanceP2PTicker getP2pDataForSell(String symbol,String tradetype) {
+		return convert1(webClient.post().uri("https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search")
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(Mono.just(new RequestBinance(symbol,tradetype)), RequestBinance.class).retrieve().bodyToMono(String.class)
+				.block());
+
+	}
 
 	public BinanceP2PTicker getTradeData(String symbol) {
 
@@ -53,7 +61,19 @@ public class BinanceClient extends AbstarctWebClient {
 		b.setVolume(Double.valueOf(volume));
 		return b;
 	}
-
+	public BinanceP2PTicker convert1(String data) {
+		DocumentContext jsonContext = JsonPath.parse(data);
+	String price =	jsonContext
+		.read("$['data'][0]['adv']['price']");
+	
+	String volume =	jsonContext
+			.read("$['data'][0]['adv']['tradableQuantity']");
+		BinanceP2PTicker b = new BinanceP2PTicker();
+		b.setSell(price);
+		b.setVolume(Double.valueOf(volume));
+		return b;
+	}
+	
 	public BinanceP2PTicker convert(String data) {
 		DocumentContext jsonContext = JsonPath.parse(data);
 	String price =	jsonContext

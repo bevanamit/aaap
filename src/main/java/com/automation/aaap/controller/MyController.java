@@ -64,4 +64,18 @@ public class MyController {
 				.contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(file);
 	}
 
+	@GetMapping(value = "/binwaz")
+	public List<TickerResult> getBnbwz() {
+
+		return tickerService.getWBn();
+
+	}
+	@GetMapping(value = "/wazbin")
+	public List<TickerResult> getWBn() {
+
+		return tickerService.getBnw();
+
+	}
+	
+	
 }
